@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Retrieval index built by ingest.py
+vector_data/
+
+# Model / dataset download caches (sentence-transformers, transformers, torch)
+.cache/
+hf_cache/
+huggingface/
+.hf_home/
+torch_cache/
+
+# Gradio
+gradio_cached_examples/
+flagged/
+
+# OS / editor
+.DS_Store
+*.log
+.vscode/
+.idea/
