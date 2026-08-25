@@ -7,6 +7,16 @@ generates a grounded answer.
 Everything runs on **local, free models** - no API keys, no external
 services, no per-request cost.
 
+## Screenshot
+
+![HR Policy Assistant - Gradio chat UI showing a question about paid annual leave, a grounded answer, and cited source passages](screenshots/hrchatbot-demo.png)
+
+*The Gradio UI, with a live question/answer exchange and cited source
+passages. (Answer text captured via a documentation-only `SCREENSHOT_MODE`
+stub - see [Notes / limitations](#notes--limitations) - since this sandbox
+can't download model weights from Hugging Face; the UI itself is the real,
+unmodified app wired to `chatbot.answer_question()`.)*
+
 ## Architecture
 
 ```
@@ -74,7 +84,7 @@ print(result["sources"])
 | `hr_policy.txt` | Sample HR policy text. **This is a placeholder** - replace it with your organization's real HR policy document(s) before relying on this for real answers. |
 | `ingest.py` | Chunks and embeds the policy text, builds the retrieval index in `vector_data/`. |
 | `chatbot.py` | Retrieval (cosine similarity) + generation (flan-t5-small) logic. |
-| `app.py` | Gradio UI wired directly to `chatbot.py`. |
+| `app.py` | Gradio chat UI (`gr.Blocks` + `gr.ChatInterface`) wired directly to `chatbot.py`. |
 | `requirements.txt` | Pinned runtime dependencies. |
 | `Chatbot_HR.ipynb` | The original Colab notebook this project started from, kept as an exploration/demo artifact. The `.py` files above are the real, runnable source of truth. |
 
@@ -91,3 +101,9 @@ print(result["sources"])
 - The first run of `ingest.py` / `app.py` downloads the embedding and
   generation models from Hugging Face (a few hundred MB total) and caches
   them locally; subsequent runs are fast.
+- `app.py` has a `SCREENSHOT_MODE` env var (`SCREENSHOT_MODE=1 python app.py`)
+  that stubs `chatbot.answer_question()` with one canned response, purely so
+  the real UI can be screenshotted for documentation in environments without
+  Hugging Face access. It's guarded by that env var, off by default, never
+  set in normal use or CI, and never touches retrieval/generation logic -
+  see the comment block at the top of `app.py` for details.
