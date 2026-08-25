@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Compile check (syntax/import errors)
+        run: python -m py_compile ingest.py chatbot.py app.py
+
+      - name: Import smoke test
+        # A full run downloads multi-GB models (sentence-transformers +
+        # flan-t5-small) which is too slow/flaky for CI, so we only verify
+        # the runtime dependencies actually import cleanly.
+        run: python -c "import sentence_transformers, transformers, torch, numpy, scipy, gradio; print('imports OK')"
+
+      - name: Notebook outputs stripped check
+        # Chatbot_HR.ipynb is kept only as an exploration/demo artifact; the
+        # .py files are the real source of truth. Make sure it never carries
+        # stale cell outputs / execution counts into the repo again.
+        run: |
+          pip install nbstripout
+          python -m nbstripout --verify Chatbot_HR.ipynb
